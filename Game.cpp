@@ -17,75 +17,61 @@
 #include"Minion4.h"
 #include"Hero.h"
 #include <QApplication>
+#include<QFile>
+#include<QTextStream>
+#include<QDebug>
+#include<QVector>
+#include"Dialog.h"
+
 
 int Game::a = 0;
 int Game::b = 0;
 extern Game * game;
 
 Game::Game(){
-    qsrand(time(NULL));
-    // create scene
-    scene = new QGraphicsScene();
-    scene->setSceneRect(0,0,800,600);
-    setScene(scene);
+    myDlg.show();
+    // create a scene after sign in
+              scene_begining = new QGraphicsScene();
+              scene_begining->setSceneRect(0,0,400,300);
+              setScene(scene_begining);
 
-    // create tower
-    Tower * t = new Tower();
-    t->setPos(0,50);
-    enemyTower1 * t1 = new enemyTower1();
-    t1->setPos(900,35);
-    enemyTower2 * t2 = new enemyTower2();
-    t2->setPos(950,275);
-    enemyTower3 * t3 = new enemyTower3();
-    t3->setPos(900,515);
+              // create two buttons
+              buttonA = new QPushButton("開始遊戲");
+              buttonB = new QPushButton("查看帳號紀錄");
+              buttonC = new QPushButton("查看排名");
 
-    // add tower to scene
-    scene->addItem(t);
-    scene->addItem(t1);
-    scene->addItem(t2);
-    scene->addItem(t3);
+              // add two buttons to scene_begining
+              scene_begining->addWidget(buttonA);
+              buttonA->setGeometry(200,200,100,100);
+              scene_begining->addWidget(buttonB);
+              buttonB->setGeometry(50,200,100,100);
+              scene_begining->addWidget(buttonC);
+              buttonC->setGeometry(120,200,100,100);
 
-    button = new QPushButton("close");
-    scene->addWidget(button);
-    connect(button, SIGNAL(clicked()), this, SLOT(test()));
+              // connect two button to scene_begining
+              connect(buttonA,SIGNAL(clicked()),this,SLOT(beginingA())); // for play
+              connect(buttonB,SIGNAL(clicked()),this,SLOT(beginingB())); // for record
+              connect(buttonC,SIGNAL(clicked()),this,SLOT(beginingC())); // for rank
 
-    button1 = new QPushButton("deck1");
-    button1 ->setGeometry(50,500,100,100);
-    scene->addWidget(button1);
-    connect(button1, SIGNAL(clicked()), this, SLOT(chose1()));
+              qsrand(time(NULL));
 
-    button10 = new QPushButton("deck1");
-    button10 ->setGeometry(150,500,100,100);
-    scene->addWidget(button10);
-    connect(button10, SIGNAL(clicked()), this, SLOT(choose1()));
 
-    hero = new QPushButton("hero");
-    hero ->setGeometry(20,500,50,50);
-    scene ->addWidget(hero);
-    connect(hero,SIGNAL(clicked()),this,SLOT(sethero()));
+  }
 
-    connect(appear_timer,SIGNAL(timeout()),this,SLOT(appear()));
-    appear_timer->start(0.000000000001);
+    //hero = new QPushButton("hero");
+    //hero ->setGeometry(20,500,50,50);
+    //scene ->addWidget(hero);
+    //connect(hero,SIGNAL(clicked()),this,SLOT(sethero()));
 
-}
+    //connect(appear_timer,SIGNAL(timeout()),this,SLOT(appear()));
+    //appear_timer->start(0.000000000001);
 
 
 
 
 
-void Game::final_lose(){
-   if(b==3){
-    scene->clear();
-    scenelose = new QGraphicsScene();
-    scenelose->setSceneRect(0,0,800,600);
-    setScene(scenelose);
-    // display lose
-    QLabel * lose = new QLabel();
-    lose->setText("you lose the idiotic game");
-    lose->setGeometry(200,200,200,50);
-    scenelose->addWidget(lose);
-   }
-}
+
+
 
 void Game::chose1()
 {
@@ -344,6 +330,7 @@ void Game::test()
 }
 
 void Game::final_win(){
+
     if(a==3){
             // clear scene and reset a new scene
             scene->clear();
@@ -356,7 +343,78 @@ void Game::final_win(){
             win->setText("you win the idiotic game");
             win->setGeometry(200,200,200,50);
             scenewin->addWidget(win);
+
+            // create a button back to scene_begining
+            buttonBack = new QPushButton("back");
+            buttonBack->setGeometry(300,0,100,100);
+            scenewin->addWidget(buttonBack);
+            connect(buttonBack,SIGNAL(clicked()),this,SLOT(back()));
+
+            if(myDlg.c==2) // when the account is gsn
+          {
+            // get the number of "gsn_win"
+            QFile file_win("/home/pd2vm/test3/gsn_win.txt");
+            file_win.open(QIODevice::ReadOnly | QIODevice::WriteOnly | QIODevice::Text );
+            QTextStream win_in(&file_win);
+            win_in >> win_1;
+            ++win_1;
+            file_win.close();
+
+            // rewrite the number of "gsn_win"
+            file_win.open(QIODevice::ReadOnly | QIODevice::WriteOnly | QIODevice::Text|QIODevice::Truncate );
+            win_in << win_1;
+
+
+            // rewrite the data in my account
+            QFile file("/home/pd2vm/test3/data.txt");
+            file.open(QIODevice::ReadOnly| QIODevice::WriteOnly| QIODevice::Text |QIODevice::Truncate );
+            QTextStream in(&file);
+            in << QObject::tr("YourAccount") << endl;
+            in << QObject::tr("Account:") << myDlg.a << endl;
+            in << QObject::tr("Password:") << myDlg.b << endl;
+            in << QObject::tr("win:") << win_1 << endl;
+            file.close();
             }
+
+            if(myDlg.cc==2) // when the account is 123
+          {
+            // get the number of "123_win"
+            QFile file_win("/home/pd2vm/test3/123_win.txt");
+            file_win.open(QIODevice::ReadOnly | QIODevice::WriteOnly | QIODevice::Text );
+            QTextStream win_in(&file_win);
+            win_in >> win_1;
+            ++win_1;
+            file_win.close();
+
+            // rewrite the number of "123_win"
+            file_win.open(QIODevice::ReadOnly | QIODevice::WriteOnly | QIODevice::Text|QIODevice::Truncate );
+            win_in << win_1;
+
+            // rewrite the data in my account
+            QFile file("/home/pd2vm/test3/data_123.txt");
+            file.open(QIODevice::ReadOnly| QIODevice::WriteOnly| QIODevice::Text |QIODevice::Truncate );
+            QTextStream in(&file);
+            in << QObject::tr("YourAccount") << endl;
+            in << QObject::tr("Account:") << myDlg.aa << endl;
+            in << QObject::tr("Password:") << myDlg.bb << endl;
+            in << QObject::tr("win:") << win_1 << endl;
+            file.close();
+          }
+         }
+}
+
+void Game::final_lose(){
+   if(b==3){
+    scene->clear();
+    scenelose = new QGraphicsScene();
+    scenelose->setSceneRect(0,0,800,600);
+    setScene(scenelose);
+    // display lose
+    QLabel * lose = new QLabel();
+    lose->setText("you lose the idiotic game");
+    lose->setGeometry(200,200,200,50);
+    scenelose->addWidget(lose);
+   }
 }
 
 void Game::appear(){
@@ -381,6 +439,129 @@ void Game::sethero()
     hero ->setFocus();
 
 }
+
+void Game::beginingA(){
+// create scene
+    scene = new QGraphicsScene();
+    scene->setSceneRect(0,0,800,600);
+    setScene(scene);
+
+    // create tower
+    Tower * t = new Tower();
+    Tower * tt = new Tower();
+    Tower * ttt = new Tower();
+    t->setPos(0,50);
+    tt->setPos(0,250);
+    ttt->setPos(0,500);
+
+    enemyTower1 * t1 = new enemyTower1();
+    t1->setPos(700,35);
+    enemyTower2 * t2 = new enemyTower2();
+    t2->setPos(850,275);
+    enemyTower3 * t3 = new enemyTower3();
+    t3->setPos(700,515);
+
+    // add tower to scene
+    scene->addItem(t);
+    scene->addItem(tt);
+    scene->addItem(ttt);
+    scene->addItem(t1);
+    scene->addItem(t2);
+    scene->addItem(t3);
+
+    button1 = new QPushButton("deck1");
+    button1 ->setGeometry(150,500,100,100);
+    scene->addWidget(button1);
+    connect(button1, SIGNAL(clicked()), this, SLOT(chose1()));
+
+    button10 = new QPushButton("deck1");
+    button10 ->setGeometry(250,500,100,100);
+    scene->addWidget(button10);
+    connect(button10, SIGNAL(clicked()), this, SLOT(choose1()));
+
+
+}
+
+void Game::beginingB(){
+    // show the recond which is dated back to last game
+        scene_record = new QGraphicsScene(0,0,300,400);
+        setScene(scene_record);
+        if(myDlg.c==2)
+        {
+           QFile file("/home/pd2vm/test3/data.txt");
+           file.open(QIODevice::ReadOnly| QIODevice::WriteOnly| QIODevice::Text );
+           QTextStream out(&file);
+
+           QVector<QString>text(4);
+                  for(int a=0;a<4;a++)
+                  {
+                    out>>text[a]>>endl;
+                    QLabel * label = new QLabel(text.at(a));
+                    label->setGeometry(0,a*100,150,50);
+                    scene_record->addWidget(label);
+                  }
+           file.close();
+         }
+
+             if(myDlg.cc==2)
+         {
+             QFile file("/home/pd2vm/test3/data_123.txt");
+             file.open(QIODevice::ReadOnly| QIODevice::WriteOnly| QIODevice::Text );
+             QTextStream out(&file);
+
+             QVector<QString>text(4);
+                    for(int a=0;a<4;a++)
+                    {
+                      out>>text[a]>>endl;
+                      QLabel * label = new QLabel(text.at(a));
+                      label->setGeometry(0,a*100,150,50);
+                      scene_record->addWidget(label);
+                    }
+             file.close();
+         }
+
+             // create a button back to scene_begining
+             buttonBack = new QPushButton("back");
+             buttonBack->setGeometry(300,0,100,100);
+             scene_record->addWidget(buttonBack);
+             connect(buttonBack,SIGNAL(clicked()),this,SLOT(back()));
+
+}
+
+void Game::beginingC(){
+    // create scene_rank
+       scene_rank = new QGraphicsScene();
+       scene_rank->setSceneRect(0,0,800,600);
+       setScene(scene_rank);
+
+       //QFile file;
+       //file->open(QIODevice::ReadOnly|QIODevice::Text);
+       //QTextStream in;
+       //in
+
+
+
+
+               QFile file_win("/home/pd2vm/test3/gsn_win.txt");
+               file_win.open(QIODevice::ReadOnly | QIODevice::WriteOnly | QIODevice::Text );
+               QTextStream win_in(&file_win);
+               win_in >> win_1;
+               ++win_1;
+               file_win.close();
+
+
+
+       // create a button back to scene_begining
+       buttonBack = new QPushButton("back");
+       buttonBack->setGeometry(300,0,100,100);
+       scene_rank->addWidget(buttonBack);
+       connect(buttonBack,SIGNAL(clicked()),this,SLOT(back()));
+   }
+void Game::back(){
+    setScene(scene_begining);
+}
+
+
 
 void Game::mousePressEvent(QMouseEvent *event){
 

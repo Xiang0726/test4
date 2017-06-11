@@ -9,6 +9,7 @@
 #include <Enemy1.h>
 #include<QPushButton>
 #include "fog.h"
+#include"Dialog.h"
 
 
 class Game: public QGraphicsView{
@@ -41,7 +42,18 @@ public:
     QPushButton * hero;
     static int a;
     static int b;
+    int win_1;
     QTimer * appear_timer= new QTimer(this);
+    InputDlg myDlg;
+
+    QGraphicsScene * scene_begining;
+        QGraphicsScene * scene_record;
+        QGraphicsScene * scene_rank;
+        QPushButton * buttonA;
+        QPushButton * buttonB;
+        QPushButton * buttonC;
+        QPushButton *buttonBack;
+
 public slots:
     void test();
     void chose1();
@@ -54,6 +66,10 @@ public slots:
     void choose4();
     void appear();
     void sethero();
+    void beginingA();
+    void beginingB();
+    void beginingC();
+    void back();
 };
 
 

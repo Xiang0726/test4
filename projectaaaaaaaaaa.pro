@@ -30,7 +30,8 @@ SOURCES += main.cpp \
     Fireball.cpp \
     fog.cpp \
     Minion4.cpp \
-    Hero.cpp
+    Hero.cpp \
+    Dialog.cpp
 
 HEADERS  += \
     Game.h \
@@ -50,7 +51,8 @@ HEADERS  += \
     Fireball.h \
     fog.h \
     Minion4.h \
-    Hero.h
+    Hero.h \
+    Dialog.h
 
 FORMS    +=
 
