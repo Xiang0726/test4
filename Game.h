@@ -19,16 +19,17 @@ public:
     Game();
     void mousePressEvent(QMouseEvent *event);
 
-
     int id;
     void final_win();
     void final_lose();
 
-    // member attributes
+    // member attributes     
+    QGraphicsScene * scenewin;        // when wining
+    QGraphicsScene * scenelose;       // when losing
+    QGraphicsScene * scene_begining;  // for begining
     QGraphicsScene * scene;
-    QGraphicsScene * scenewin;
-    QGraphicsScene * scenelose;
-    QGraphicsScene * test1;
+    QGraphicsScene * scene_record;    // for record
+    QGraphicsScene * scene_rank;      // for rank
 
     QPushButton * button;
     QPushButton * button1;
@@ -43,19 +44,18 @@ public:
     static int a;
     static int b;
     int win_1;
+    int win_g;
     QTimer * appear_timer= new QTimer(this);
     InputDlg myDlg;
 
-    QGraphicsScene * scene_begining;
-        QGraphicsScene * scene_record;
-        QGraphicsScene * scene_rank;
-        QPushButton * buttonA;
-        QPushButton * buttonB;
-        QPushButton * buttonC;
-        QPushButton *buttonBack;
+
+    QPushButton * buttonA;
+    QPushButton * buttonB;
+    QPushButton * buttonC;
+    QPushButton *buttonBack;
+
 
 public slots:
-    void test();
     void chose1();
     void chose2();
     void chose3();
@@ -71,7 +71,4 @@ public slots:
     void beginingC();
     void back();
 };
-
-
-
 #endif // GAME_H
